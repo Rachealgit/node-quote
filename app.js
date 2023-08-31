@@ -6,9 +6,13 @@ const { response } = require("express");
 const express = require("express");
 const app = express();
 const fs = require('fs')
+const lodash = require('lodash');
+
 
 //load the quotes JSON
 const quotes = require("./quotes.json");
+
+
 
 // Now register handlers for some routes:
 //   /                  - Return some helpful welcome info (text)
@@ -19,9 +23,23 @@ app.get("/", function (request, response) {
 });
 
 //START OF YOUR CODE...
-
+app.get("/quotes", function (request, response) {
+  response.send(quotes);
+});
+app.get("/quotes/random", function (request, response) {
+  response.send(pickFromArray(quotes));
+});
 //...END OF YOUR CODE
-
+app.get("/quotes/search", function (request, response) {
+  const termParam = request.query.term.toLowerCase()
+  const result = quotes.filter (function (quote) {
+  const quoteText = quote.quote.toLowerCase()
+  const quoteAuthor = quote.author.toLowerCase()
+  return quoteText.includes(termParam) || quoteAuthor.includes(termParam)
+  })
+  response.send(result);
+});
+//
 //You can use this function to pick one element at random from a given array
 //example: pickFromArray([1,2,3,4]), or
 //example: pickFromArray(myContactsArray)
